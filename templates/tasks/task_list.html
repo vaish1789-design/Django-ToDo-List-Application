@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My tasks{% endblock %}
+{% block content %}
+<section class="hero d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+  <div><p class="eyebrow mb-2">YOUR PERSONAL WORKSPACE</p><h1 class="display-6 fw-bold mb-2">Make today count.</h1><p class="text-secondary mb-0">One step at a time. Keep your priorities moving.</p></div>
+  <a class="btn btn-primary btn-lg" href="{% url 'task_create' %}">＋ Add a task</a>
+</section>
+<div class="row g-3 mb-4">
+  <div class="col-4"><div class="stat-card"><span class="stat-label">All tasks</span><strong>{{ total_count }}</strong></div></div>
+  <div class="col-4"><div class="stat-card"><span class="stat-label">Pending</span><strong>{{ pending_count }}</strong></div></div>
+  <div class="col-4"><div class="stat-card"><span class="stat-label">Completed</span><strong>{{ completed_count }}</strong></div></div>
+</div>
+<div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 fw-bold mb-0">Your task list</h2><span class="text-secondary small">{{ total_count }} total</span></div>
+{% if tasks %}
+  <div class="d-grid gap-3">
+    {% for task in tasks %}
+      <article class="task-card {% if task.is_completed %}task-done{% endif %}">
+        <div class="d-flex align-items-start gap-3">
+          <form method="post" action="{% url 'task_toggle' task.pk %}" class="pt-1">
+            {% csrf_token %}
+            <button class="completion-button {% if task.is_completed %}is-complete{% endif %}" type="submit" aria-label="Toggle task completion">{% if task.is_completed %}✓{% endif %}</button>
+          </form>
+          <div class="flex-grow-1 min-w-0">
+            <h3 class="h6 fw-bold mb-1 {% if task.is_completed %}text-decoration-line-through text-secondary{% endif %}">{{ task.title }}</h3>
+            {% if task.description %}<p class="text-secondary mb-2 task-description">{{ task.description|linebreaksbr }}</p>{% endif %}
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              {% if task.is_completed %}<span class="task-tag tag-done">Completed</span>{% else %}<span class="task-tag tag-pending">Pending</span>{% endif %}
+              {% if task.due_date %}<span class="small text-secondary">Due {{ task.due_date|date:"M j, Y" }}</span>{% endif %}
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <a class="btn btn-sm btn-light border" href="{% url 'task_update' task.pk %}">Edit</a>
+            <a class="btn btn-sm btn-light border text-danger" href="{% url 'task_delete' task.pk %}">Delete</a>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state"><div class="empty-icon">✦</div><h3 class="h5 fw-bold">Your list is a blank canvas.</h3><p class="text-secondary">Add your first task and build some momentum.</p><a class="btn btn-primary" href="{% url 'task_create' %}">Create your first task</a></div>
+{% endif %}
+{% endblock %}

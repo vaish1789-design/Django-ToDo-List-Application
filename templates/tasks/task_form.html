@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block content %}
+<div class="form-wrap">
+  <a class="back-link" href="{% url 'task_list' %}">← Back to tasks</a>
+  <div class="card app-card p-4 p-md-5 mt-3">
+    <p class="eyebrow mb-2">TASK DETAILS</p><h1 class="h3 fw-bold mb-4">{{ page_title }}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-4"><label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}{% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|striptags }}</div>{% endif %}</div>
+      {% endfor %}
+      <div class="d-flex gap-2"><button class="btn btn-primary px-4" type="submit">Save task</button><a class="btn btn-light border" href="{% url 'task_list' %}">Cancel</a></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
